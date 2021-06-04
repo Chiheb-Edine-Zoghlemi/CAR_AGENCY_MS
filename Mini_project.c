@@ -107,26 +107,26 @@ void delete_voiture_client(struct client Cl, int pos)
 // affichage de menu
 void Menu()
 {
-    printf("\e[31m");
-    printf("\t=======================================\n");
-    printf("\t\t    MENU\n");
-    printf("\t=======================================\n");
-    printf("\tLocation d'une voiture        || 1\n");
-    printf("\tRetour d'une voiture          || 2\n");
-    printf("\tEtat d'une voiture            || 3\n");
-    printf("\tEtat du parc de voitures      || 4\n");
-    printf("\tAffichage des voitures        || 5\n");
-    printf("\tSortir                        || 0\n");
-    printf("\t=======================================\n");
+    printf("\e[31m\n");
+    printf("=======================================\n");
+    printf("\t    MENU\n");
+    printf("=======================================\n");
+    printf("Location d'une voiture        || 1\n");
+    printf("Retour d'une voiture          || 2\n");
+    printf("Etat d'une voiture            || 3\n");
+    printf("Etat du parc de voitures      || 4\n");
+    printf("Affichage des voitures        || 5\n");
+    printf("Sortir                        || 0\n");
+    printf("=======================================\n");
     printf("\e[0m");
 }
 //copyrights section
 void Credit()
 {
     printf("\e[31m");
-    printf("\t====================================================================\n");
+    printf("====================================================================\n");
     printf("\tDevelopé par Amen Allah Zoghlemi & xxxxxxxxxxx \n");
-    printf("\t====================================================================\n");
+    printf("====================================================================\n");
     printf("\e[0m");
 }
 
@@ -135,7 +135,17 @@ void affichage()
 {
     for (int i = 0; i < nv; i++)
     {
-        /* code */
+        printf("\n----------------------------------------\n");
+        printf("\x1B[36m\t#Voiture %d \x1B[0m", i + 1);
+        printf("\n----------------------------------------\n");
+        printf("| Modèle                   | %s \n", tv[i].modele);
+        printf("_____________________________________\n");
+        printf("| Numéro d'immatriculation | %s\n", tv[i].numMat);
+        printf("_____________________________________\n");
+        printf("| Kilométrage              | %d\n", tv[i].km);
+        printf("_____________________________________\n");
+        printf("| État                     | %d\n", tv[i].etat);
+        printf("----------------------------------------\n");
     }
 }
 // choix 1
@@ -220,6 +230,9 @@ void retour()
 
 void stat()
 {
+    printf("\n_______________________\n");
+    printf("\nLocation de voiture");
+    printf("\n_______________________\n");
     /*
     • le nombre total de voitures,
     • le nombre de voitures en location et leur numéro d'immatriculation,
@@ -241,12 +254,12 @@ void stat()
         }
         total_km = total_km + tv[i].km;
     }
-    printf("\n===============================================================================");
+    printf("\n=================================================================");
     printf("\n||-> le nombre total de voitures %d ", nv);
     printf("\n||-> le nombre de voitures en location %d ", total_nd);
     printf("\n||-> le nombre de voitures disponible %d ", total_d);
     printf("\n||-> le kilométrage moyen de l'ensemble des voitures %d ", total_km / nv);
-    printf("\n===============================================================================\n");
+    printf("\n=================================================================");
 }
 void car_status()
 {
@@ -262,11 +275,11 @@ void car_status()
     else
     {
         printf("\n----------------------------\n");
-        printf("| Modèle | %s |", tv[pos_v].modele);
-        printf("| Numéro d'immatriculation | %s |", tv[pos_v].numMat);
-        printf("| Kilométrage | %d |", tv[pos_v].km);
-        printf("| État | %d |", tv[pos_v].etat);
-        printf("\n----------------------------\n");
+        printf("| Modèle                   | %s \n", tv[pos_v].modele);
+        printf("| Numéro d'immatriculation | %s \n", tv[pos_v].numMat);
+        printf("| Kilométrage              | %d \n", tv[pos_v].km);
+        printf("| État                     | %d \n", tv[pos_v].etat);
+        printf("----------------------------\n");
     }
 }
 // fonction main
@@ -280,6 +293,7 @@ int main()
     printf("\n_______________________\n");
     printf("\nAjouter vos voitures");
     printf("\n_______________________\n");
+    int x ;
     for (int i = 0; i < 50; i++)
     {
         printf("\n\x1B[36m #Voiture %d \x1B[0m\n", i + 1);
@@ -290,20 +304,41 @@ int main()
         printf("- numéro d’immatriculation  \n");
         printf("-> ");
         scanf("%s", nv_voitur.numMat);
+        int km ; 
         printf("- kilométrage\n-> ");
-        scanf("%d", &(nv_voitur.km));
+        while(1){
+            scanf("%d", &km);
+            if(km<0){
+                 printf("\x1B[33mkilométrage est non valide -- il faut saisir un entier positive\x1B[0m");
+            }else {
+                nv_voitur.km=km;
+                break;
+            }
+        }
+       
+        int etat;
         printf("- état (0 : disponible ou 1 : en cours de location)  \n-> ");
-        scanf("%d", &nv_voitur.etat);
-        int x = atoi(nv_voitur.numMat);
-        if (x < 0)
-        {
-            nv = i;
+        while(1){
+            scanf("%d", &etat);
+            if(etat == 0 || etat == 1) {
+                nv_voitur.etat = etat;
+                break;
+            }else {
+                printf("\x1B[33m\nétat non valide -- il faut taper  (0 : disponible ou 1 : en cours de location)\x1B[0m\n");
+            }
+        }
+       
+        
+        printf("Voulez ajouter une autre voiture ? ( choix = 0 -> Non , choix != 0 -> Oui)\n");
+        printf("Votre choix -> ");
+        scanf("%d", &x);
+        tv[i] = nv_voitur;
+        if (x == 0)
+        { 
+            nv = i+1;
             break;
         }
-        else
-        {
-            tv[i] = nv_voitur;
-        }
+        
     }
 
     int choix = 1;
@@ -338,7 +373,9 @@ int main()
             case 4:
                 stat();
                 break;
-
+            case 5 : 
+                affichage();
+                break;
             default:
                 printf("\n Unvalid Choice \n ");
                 break;
