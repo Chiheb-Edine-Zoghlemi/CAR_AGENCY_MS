@@ -183,7 +183,7 @@ void Credit()
 {
     printf("\e[31m");
     printf("====================================================================\n");
-    printf("\tDevelopé par Amen Allah Zoghlemi & xxxxxxxxxxx \n");
+    printf("\tDevelopé par Amen Allah Zoghlemi & Malek Ladab \n");
     printf("====================================================================\n");
     printf("\e[0m");
 }
