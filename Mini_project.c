@@ -21,7 +21,26 @@ struct client
 struct voiture tv[50];
 struct client tc[50];
 int nv;
-int nc;
+int nc = 0;
+
+void affichage_clients()
+{
+    printf("\n_______________________\n");
+    printf("\nAffichage  des Clients");
+    printf("\n_______________________\n");
+    for (int i = 0; i < nc; i++)
+    {
+        printf("\n----------------------------------------\n");
+        printf("\x1B[36m\t#Client %d \x1B[0m", i + 1);
+        printf("\n----------------------------------------\n");
+        printf("| Nom                   | %s \n", tc[i].nom);
+        printf("_____________________________________\n");
+        printf("| Prénom                | %s\n", tc[i].prenom);
+        printf("_____________________________________\n");
+        printf("| CIN                   | %d\n", tc[i].cin);
+        printf("----------------------------------------\n");
+    }
+}
 
 struct client create_person(int cin)
 {
@@ -34,6 +53,38 @@ struct client create_person(int cin)
     printf("-> ");
     scanf("%s", nv_person.prenom);
     return nv_person;
+}
+void ajouter_client()
+{
+    int x;
+    for (int i = nc; i < 50; i++)
+    {
+        printf("\n\x1B[36m #Client %d \x1B[0m\n", i + 1);
+        struct client nv_person;
+        printf("- Veuillez saisir votre Nom. \n");
+        printf("-> ");
+        scanf("%s", nv_person.nom);
+        printf("- Veuillez saisir votre Prénom . \n");
+        printf("-> ");
+        scanf("%s", nv_person.prenom);
+        printf("- Veuillez saisir votre numéro CIN. \n");
+        printf("-> ");
+        scanf("%d", &nv_person.cin);
+        nc++;
+        printf("Voulez ajouter une autre Client ? ( choix = 0 -> Non , choix != 0 -> Oui)\n");
+        printf("Votre choix -> ");
+        scanf("%d", &x);
+        tc[i] = nv_person;
+        if (x == 0)
+        {
+            nc = i + 1;
+            break;
+        }
+    }
+    if (nc == 50)
+    {
+        printf("\x1B[33m Le list de clients est plein  :( \x1B[0m\n");
+    }
 }
 //question 3
 int seek_personne(int cin)
@@ -60,45 +111,50 @@ int seek_voiture(char NUMERO[10])
     }
     return -1;
 }
-/*
+
 //question 5
-char* substr (char**  ch[], int i , int j ){
-char ch2[strlen(ch)]; 
-int o = 0 ; 
-for (int x = i;x<j+1;x++){
-    ch2[o]=ch[x];
-    o++;
-}
-return ch2;
-}
 int seek_voiture_client(struct client Cl, char NUMERO[10])
 {
-    for (int i = 0; i < strlen(Cl.tcv); i++)
+    if (strlen(*Cl.tcv) < 10)
     {
-        char * sub_string = substr(Cl.tcv, i, 10);
-        if ( (sizeof(sub_string)/sizeof(sub_string[0]))  < 10)
-        {
-            return -1;
-        }
-        else
-        {
-            if (strcmp(NUMERO,sub_string) == 0)
-            {
-                return i;
-            }
-        }
-    }
-}*/
-//question 6
-void delete_voiture_client(struct client Cl, int pos)
-{
-    if ((sizeof(Cl.tcv) / sizeof(Cl.tcv[0])) < pos)
-    {
-        printf("Postion est unvalide");
+        return -1;
     }
     else
     {
-        for (int i = pos; i < 11; i++)
+        for (int i = 0; i < strlen(*Cl.tcv); i++)
+        {
+            char *sub_string[10];
+            for (int j = i; j < i + 10; j++)
+            {
+                sub_string[j] = Cl.tcv[j];
+            }
+
+            if (strlen(*sub_string) < 10)
+            {
+                return -1;
+            }
+            else
+            {
+                if (strcmp(NUMERO, *sub_string) == 0)
+                {
+                    return i;
+                }
+            }
+        }
+        return -1;
+    }
+}
+
+//question 6
+void delete_voiture_client(struct client Cl, int pos)
+{
+    if (strlen(*Cl.tcv) < pos)
+    {
+        printf("\x1B[33m\nPostion est unvalide");
+    }
+    else
+    {
+        for (int i = pos; i < pos + 10; i++)
         {
             Cl.tcv[i] = "";
         }
@@ -116,6 +172,8 @@ void Menu()
     printf("Etat d'une voiture            || 3\n");
     printf("Etat du parc de voitures      || 4\n");
     printf("Affichage des voitures        || 5\n");
+    printf("Affichage des clinets         || 6\n");
+    printf("Ajouter un clinet             || 7\n");
     printf("Sortir                        || 0\n");
     printf("=======================================\n");
     printf("\e[0m");
@@ -133,6 +191,9 @@ void Credit()
 // affichage de voitures
 void affichage()
 {
+    printf("\n_______________________\n");
+    printf("\nAffichage  des voitures");
+    printf("\n_______________________\n");
     for (int i = 0; i < nv; i++)
     {
         printf("\n----------------------------------------\n");
@@ -161,13 +222,13 @@ void location()
     int pos = seek_voiture(num);
     if (pos == -1)
     {
-        printf("Le Voiture n'exist Pas :( \n");
+        printf("\x1B[33m Le Voiture n'exist Pas :( \x1B[0m\n");
     }
     else
     {
         if (tv[pos].etat == 1)
         {
-            printf("Le Voiture est deja loué  :( \n");
+            printf("\x1B[33m Le Voiture est deja loué  :( \x1B[0m\n");
         }
         else
         {
@@ -180,6 +241,8 @@ void location()
             {
                 printf("Bienvenu chez Nous \n");
                 struct client new_client = create_person(cin);
+                nc++;
+                tc[nc] = new_client;
                 // code to add car into client cars
             }
             else
@@ -206,7 +269,7 @@ void retour()
     int pos_v = seek_voiture(num);
     if (pos_v == -1)
     {
-        printf("la voiture n'existe pas !");
+        printf("\x1B[33mLa voiture n'existe pas !\x1B[0m");
     }
     else
     {
@@ -215,15 +278,16 @@ void retour()
         printf("-> ");
         scanf("%d", &km);
         tv[pos_v].km = tv[pos_v].km + km;
-        tv[pos_v].etat = 1;
+        tv[pos_v].etat = 0;
         int pos_p = seek_personne(cin);
         if (pos_p == -1)
         {
-            printf("le Client avec le CIN %d n'existe pas !", cin);
+            printf("\x1B[33mLe Client avec le CIN %d n'existe pas !\x1B[0m", cin);
         }
         else
         {
-            // code de delete the car from the client list of cars
+
+            delete_voiture_client(tc[pos_p], seek_voiture_client(tc[pos_p], num));
         }
     }
 }
@@ -270,7 +334,7 @@ void car_status()
     int pos_v = seek_voiture(num);
     if (pos_v == -1)
     {
-        printf("la voiture n'existe pas !");
+        printf("\x1B[33mla voiture n'existe pas !\x1B[0m");
     }
     else
     {
@@ -293,7 +357,7 @@ int main()
     printf("\n_______________________\n");
     printf("\nAjouter vos voitures");
     printf("\n_______________________\n");
-    int x ;
+    int x;
     for (int i = 0; i < 50; i++)
     {
         printf("\n\x1B[36m #Voiture %d \x1B[0m\n", i + 1);
@@ -304,41 +368,49 @@ int main()
         printf("- numéro d’immatriculation  \n");
         printf("-> ");
         scanf("%s", nv_voitur.numMat);
-        int km ; 
+        int km;
         printf("- kilométrage\n-> ");
-        while(1){
+        while (1)
+        {
             scanf("%d", &km);
-            if(km<0){
-                 printf("\x1B[33mkilométrage est non valide -- il faut saisir un entier positive\x1B[0m");
-            }else {
-                nv_voitur.km=km;
+            if (km < 0)
+            {
+                printf("\x1B[33mkilométrage est non valide -- il faut saisir un entier positive\x1B[0m");
+                printf("-> ");
+            }
+            else
+            {
+                nv_voitur.km = km;
                 break;
             }
         }
-       
+
         int etat;
         printf("- état (0 : disponible ou 1 : en cours de location)  \n-> ");
-        while(1){
+        while (1)
+        {
             scanf("%d", &etat);
-            if(etat == 0 || etat == 1) {
+            if (etat == 0 || etat == 1)
+            {
                 nv_voitur.etat = etat;
                 break;
-            }else {
+            }
+            else
+            {
                 printf("\x1B[33m\nétat non valide -- il faut taper  (0 : disponible ou 1 : en cours de location)\x1B[0m\n");
+                printf("-> ");
             }
         }
-       
-        
+
         printf("Voulez ajouter une autre voiture ? ( choix = 0 -> Non , choix != 0 -> Oui)\n");
         printf("Votre choix -> ");
         scanf("%d", &x);
         tv[i] = nv_voitur;
         if (x == 0)
-        { 
-            nv = i+1;
+        {
+            nv = i + 1;
             break;
         }
-        
     }
 
     int choix = 1;
@@ -373,11 +445,17 @@ int main()
             case 4:
                 stat();
                 break;
-            case 5 : 
+            case 5:
                 affichage();
                 break;
+            case 6:
+                affichage_clients();
+                break;
+            case 7:
+                ajouter_client();
+                break;
             default:
-                printf("\n Unvalid Choice \n ");
+                printf("\n\x1B[33m Choix est unvalidé, Il faut choisi un enter enter 0 -- 7 \x1B[0m\n ");
                 break;
             }
         }
